@@ -1,4 +1,5 @@
 library dragonchain_sdk;
+
 import 'package:logger/logger.dart';
 import 'package:dragonchain_sdk/services/config_service.dart';
 import 'package:dragonchain_sdk/services/credential_service.dart';
@@ -24,18 +25,10 @@ class DragonchainClient {
 
   getStatus() async => await this.get('/v1/status');
 
-  createTransaction(
-    String transactionType,
-    dynamic payload,
-    {String tag, String callbackURL}
-  ) async {
+  createTransaction(String transactionType, dynamic payload, {String tag, String callbackURL}) async {
     if (payload == null) payload = '';
-    var transactionBody = {
-      "version": '1',
-      "txn_type": transactionType,
-      "payload": payload
-    };
-    if (tag != null || tag != '') transactionBody['tag'] = tag;
+    var transactionBody = {"version": '1', "txn_type": transactionType, "payload": payload};
+    if (tag != null && tag != '') transactionBody['tag'] = tag;
     return await this.post('/v1/transaction', transactionBody, callbackURL: callbackURL);
   }
 
@@ -55,11 +48,8 @@ class DragonchainClient {
     return await this.post("/v1/transaction_bulk", bulkTransactionBody);
   }
 
-  queryTransactions(
-    String transactionType,
-    String redisearchQuery,
-    {bool verbatim, int offset, int limit, String sortBy, bool sortAscending, bool idsOnly}
-  ) async {
+  queryTransactions(String transactionType, String redisearchQuery,
+      {bool verbatim, int offset, int limit, String sortBy, bool sortAscending, bool idsOnly}) async {
     Map<String, dynamic> queryParams = {
       "transaction_type": transactionType,
       "q": redisearchQuery,
@@ -75,15 +65,8 @@ class DragonchainClient {
     return await this.get("/v1/transaction${this.generateQueryString(queryParams)}");
   }
 
-  queryBlocks(
-    String redisearchQuery,
-    {bool verbatim, int offset, int limit, String sortBy, bool sortAscending, bool idsOnly}
-  ) async {
-    Map<String, dynamic> queryParams = {
-      "q": redisearchQuery,
-      "offset": (offset != null) ? offset : 0,
-      "limit": (limit != null) ? limit : 10
-    };
+  queryBlocks(String redisearchQuery, {bool verbatim, int offset, int limit, String sortBy, bool sortAscending, bool idsOnly}) async {
+    Map<String, dynamic> queryParams = {"q": redisearchQuery, "offset": (offset != null) ? offset : 0, "limit": (limit != null) ? limit : 10};
     if (idsOnly != null) queryParams["id_only"] = idsOnly;
     if (sortBy != null) {
       queryParams["sort_by"] = sortBy;
@@ -92,15 +75,9 @@ class DragonchainClient {
     return await this.get("/v1/block${this.generateQueryString(queryParams)}");
   }
 
-  createTransactionType(
-    String transactionType,
-    [List<Map<String, String>> customIndexedFields]
-  ) async {
+  createTransactionType(String transactionType, [List<Map<String, String>> customIndexedFields]) async {
     if (transactionType == null || transactionType == '') throw Exception('Empty transaction type');
-    var body = {
-      "version": '2',
-      "txn_type": transactionType
-    };
+    var body = {"version": '2', "txn_type": transactionType};
     if (customIndexedFields != null) body["customIndexedFields"] = this.validateAndBuildCustomIndexFieldsArray(customIndexedFields);
     return await this.post('/v1/transaction-type', body);
   }
@@ -125,31 +102,20 @@ class DragonchainClient {
 
   deleteApiKey(String keyId) async => await this.delete("/v1/api-key/$keyId");
 
-  updateApiKey(String keyId, String nickname) async => await this.put("/v1/api-key/$keyId", { "nickname": nickname });
+  updateApiKey(String keyId, String nickname) async => await this.put("/v1/api-key/$keyId", {"nickname": nickname});
 
-  createSmartContract(
-    String transactionType,
-    String image,
-    String cmd,
-    {
-      List<String> args,
+  createSmartContract(String transactionType, String image, String cmd,
+      {List<String> args,
       String executionOrder,
       Map<String, String> environmentVariables,
       Map<String, String> secrets,
       int scheduleIntervalInSeconds,
       String cronExpression,
       String registryCredentials,
-      List<Map<String, String>> customIndexedFields
-    }
-  ) async {
-    if (scheduleIntervalInSeconds != null && cronExpression != null) throw Exception("Parameters 'scheduleIntervalInSeconds' AND 'cronExpression' are mutually exclusive");
-    Map<String, dynamic> body = {
-      "version": "3",
-      "txn_type": transactionType,
-      "image": image,
-      "execution_order": "parallel",
-      "cmd": cmd
-    };
+      List<Map<String, String>> customIndexedFields}) async {
+    if (scheduleIntervalInSeconds != null && cronExpression != null)
+      throw Exception("Parameters 'scheduleIntervalInSeconds' AND 'cronExpression' are mutually exclusive");
+    Map<String, dynamic> body = {"version": "3", "txn_type": transactionType, "image": image, "execution_order": "parallel", "cmd": cmd};
     if (args != null) body["args"] = args;
     if (executionOrder != null && ["parallel", "serial"].contains(executionOrder)) body["execution_order"] = executionOrder;
     if (environmentVariables != null) body["env"] = environmentVariables;
@@ -158,13 +124,11 @@ class DragonchainClient {
     if (cronExpression != null) body["cron"] = cronExpression;
     if (registryCredentials != null) body["auth"] = registryCredentials;
     if (customIndexedFields != null) body["custom_indexes"] = this.validateAndBuildCustomIndexFieldsArray(customIndexedFields);
-    return await this.post("/v1/contract", body);  
+    return await this.post("/v1/contract", body);
   }
 
-  updateSmartContract(
-    String smartContractId,
-    {
-      String image,
+  updateSmartContract(String smartContractId,
+      {String image,
       String cmd,
       List<String> args,
       String executionOrder,
@@ -174,13 +138,10 @@ class DragonchainClient {
       int scheduleIntervalInSeconds,
       String cronExpression,
       String registryCredentials,
-      bool disableSchedule
-    }
-  ) async {
-    if (scheduleIntervalInSeconds != null && cronExpression != null) throw Exception("Parameters 'scheduleIntervalInSeconds' AND 'cronExpression' are mutually exclusive");
-    Map<String, dynamic> body = {
-      "version": "3"
-    };
+      bool disableSchedule}) async {
+    if (scheduleIntervalInSeconds != null && cronExpression != null)
+      throw Exception("Parameters 'scheduleIntervalInSeconds' AND 'cronExpression' are mutually exclusive");
+    Map<String, dynamic> body = {"version": "3"};
     if (image != null) body["image"] = image;
     if (cmd != null) body["cmd"] = cmd;
     if (args != null) body["args"] = args;
@@ -195,12 +156,7 @@ class DragonchainClient {
     return await this.put("/v1/contract/$smartContractId", body);
   }
 
-  getSmartContract(
-    {
-      String smartContractId,
-      String transactionType
-    }
-  ) async {
+  getSmartContract({String smartContractId, String transactionType}) async {
     if (smartContractId != null && transactionType != null) throw Exception("Only one of 'smartContractId' or 'transactionType' can be specified");
     if (smartContractId != null) return await this.get("/v1/contract/$smartContractId");
     if (transactionType != null) return await this.get("/v1/contract/txn_type/$transactionType");
@@ -209,13 +165,7 @@ class DragonchainClient {
 
   deleteSmartContract(String smartContractId) async => await this.delete("/v1/contract/$smartContractId");
 
-  getSmartContractLogs(
-    String smartContractId,
-    {
-      int tail,
-      String since
-    }
-  ) async {
+  getSmartContractLogs(String smartContractId, {int tail, String since}) async {
     Map<String, dynamic> queryParams = {};
     if (tail != null) queryParams["tail"] = tail;
     if (since != null) queryParams["since"] = since;
@@ -242,7 +192,7 @@ class DragonchainClient {
     return await this.get("/v1/verifications/$blockId");
   }
 
-  get(String path, [bool jsonParse=true]) async {
+  get(String path, [bool jsonParse = true]) async {
     return await this.makeRequest(path, 'GET', parse: jsonParse);
   }
 
@@ -282,7 +232,7 @@ class DragonchainClient {
         Map<String, String> optionsBody = {};
         if (customIndexedField["options"]["noIndex"] != null) optionsBody["no_index"] = customIndexedField["options"]["noIndex"];
         if (customIndexedField["type"] == "tag") {
-            if (customIndexedField["options"]["separator"] != null) optionsBody["separator"] = customIndexedField["options"]["separator"];
+          if (customIndexedField["options"]["separator"] != null) optionsBody["separator"] = customIndexedField["options"]["separator"];
         } else if (customIndexedField["type"] == "text") {
           if (customIndexedField["options"]["noStem"] != null) optionsBody["no_stem"] = customIndexedField["options"]["noStem"];
           if (customIndexedField["options"]["weight"] != null) optionsBody["weight"] = customIndexedField["options"]["weight"];
@@ -299,11 +249,7 @@ class DragonchainClient {
     return returnList;
   }
 
-  getHttpHeaders(
-    String path,
-    String method,
-    {String contentType= '', String body=''}
-  ) {
+  getHttpHeaders(String path, String method, {String contentType = '', String body = ''}) {
     var timestamp = (new DateTime.now().toUtc()).toIso8601String();
     Map<String, String> headers = {
       "dragonchain": this.credentialService.dragonchainId,
@@ -314,40 +260,28 @@ class DragonchainClient {
     return headers;
   }
 
-  makeRequest(
-    String path,
-    String method,
-    {String body='', bool parse=true}
-  ) async {
+  makeRequest(String path, String method, {String body = '', bool parse = true}) async {
     String contentType = '';
     if (body != '') contentType = 'application/json';
     var headers = this.getHttpHeaders(path, method, body: body, contentType: contentType);
     String url = '${this.endpoint}$path';
     var request = await httpMethods[method](Uri.parse(url));
     headers.forEach((key, value) => request.headers.set(key, value));
-    if (['PUT','POST','DELETE'].contains(method)) request.write(body);
+    if (['PUT', 'POST', 'DELETE'].contains(method)) request.write(body);
     var response = await request.close();
-    var responseBody;
+    String responseBody = '';
     await for (var contents in response.transform(Utf8Decoder())) {
-      responseBody = (method != 'DELETE' || parse == true) ? jsonDecode(contents) : contents;
+      if (contents != null) responseBody += contents;
     }
-    return responseBody;
+    return (responseBody != null && method != 'DELETE' || parse == true) ? json.decode(responseBody) : responseBody;
   }
 
   static createClient(
-    {
-      String dragonchainId,
-      String authKeyId,
-      String authKey,
-      String endpoint,
-      bool verify= false,
-      String algorithm= 'SHA256'
-    }
-  ) async {
-    logger.d(algorithm);
+      {String dragonchainId, String authKeyId, String authKey, String endpoint, bool verify = false, String algorithm = 'SHA256'}) async {
     if (dragonchainId == null || dragonchainId == '') throw Exception('Did not provide dragonchain ID');
     if (endpoint == null || endpoint == '') endpoint = await ConfigService.getDragonchainEndpoint(dragonchainId);
-    var credentials = new CredentialService(dragonchainId, { "authKeyId": authKeyId, "authKey": authKey }, algorithm);
+    logger.d(endpoint);
+    var credentials = new CredentialService(dragonchainId, {"authKeyId": authKeyId, "authKey": authKey}, algorithm);
     return new DragonchainClient(endpoint, credentials, verify);
   }
 }
