@@ -1,3 +1,8 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.2]
 
-* TODO: Describe initial release.
+- **Bugfix:**
+  - Removes staging refrences.
+
+## [0.0.1] - Initial Release
+
+- Much left to do. Any help is appriciated.
