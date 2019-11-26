@@ -1,6 +1,6 @@
 name: dragonchain_sdk
-description: Dragoncahin Dart SDK
-version: 0.0.1
+description: Dragoncahin Dart SDK for use in talking with your Dragonchain.
+version: 0.0.2
 author: The Dragon Company <support@dragonchain.com>
 homepage: https://www.dragonchain.com
 repository: https://github.com/dragonchain/dragonchain-sdk-dart
@@ -14,7 +14,7 @@ dependencies:
   flutter_secure_storage: ^3.3.1+1
   http: ^0.12.0+2
   crypto: ^2.1.3
-  logger: ^0.6.0
+  logger: # latest
 
 dev_dependencies:
   flutter_test:

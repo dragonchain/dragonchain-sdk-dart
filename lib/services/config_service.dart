@@ -10,13 +10,15 @@ final storage = new FlutterSecureStorage();
 
 /// Service object responsible for managing credentials for Dragonchain.
 class ConfigService {
-  static Future<Map<String, String>> setDragonchainCredentials(String dragonchainId, String authKeyId, String authKey) async {
+  static Future<Map<String, String>> setDragonchainCredentials(
+      String dragonchainId, String authKeyId, String authKey) async {
     await storage.write(key: "authKeyId:$dragonchainId", value: authKeyId);
     await storage.write(key: "authKey:$dragonchainId", value: authKey);
     return {authKeyId: authKeyId, authKey: authKey};
   }
 
-  static Future<Map<String, String>> getDragonchainCredentials(String dragonchainId) async {
+  static Future<Map<String, String>> getDragonchainCredentials(
+      String dragonchainId) async {
     logger.d(storage);
     String authKeyId = await storage.read(key: "authKeyId:$dragonchainId");
     logger.d('AKID: $authKeyId');
@@ -29,7 +31,8 @@ class ConfigService {
 
   static Future<String> getDragonchainEndpoint(String dragonchainId) async {
     try {
-      final request = await new HttpClient().getUrl(Uri.parse("https://matchmaking.api.dragonchain.com/v1/registrations/$dragonchainId"));
+      final request = await new HttpClient().getUrl(Uri.parse(
+          "https://matchmaking.api.dragonchain.com/v1/registrations/$dragonchainId"));
       var response = await request.close();
       logger.d(response);
       if (response.statusCode == 200) {
