@@ -74,6 +74,8 @@ class DragonchainClient {
       queryParams["sort_by"] = sortBy;
       if (sortAscending != null) queryParams["sort_asc"] = sortAscending;
     }
+    print('about to call querystring');
+    print(this.generateQueryString(queryParams));
     return await this
         .get("/v1/transaction${this.generateQueryString(queryParams)}");
   }
@@ -270,10 +272,11 @@ class DragonchainClient {
 
   generateQueryString(Map<String, dynamic> queryObject) {
     String path = '';
+
     if (queryObject.length > 0) {
       path = '?';
       queryObject
-          .forEach((String key, dynamic value) => path += "$key=$value&");
+          .forEach((String key, dynamic value) => path += "$key=${Uri.encodeComponent(value.toString())}&");
     }
     if (path.endsWith("&")) path = path.substring(0, path.length - 1);
     return path;
