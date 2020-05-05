@@ -268,7 +268,7 @@ class DragonchainClient {
     return this.makeRequest(path, 'POST', body: bodyString);
   }
 
-  generateQueryString(Map<String, String> queryObject) {
+  generateQueryString(Map<String, dynamic> queryObject) {
     String path = '';
     if (queryObject.length > 0) {
       path = '?';
