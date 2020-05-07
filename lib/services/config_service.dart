@@ -3,7 +3,7 @@ library dragonnchain_sdk;
 import 'dart:convert';
 import 'package:logger/logger.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 
 final logger = new Logger();
 final storage = new FlutterSecureStorage();

@@ -5,7 +5,7 @@ import 'package:dragonchain_sdk/services/config_service.dart';
 import 'package:dragonchain_sdk/services/credential_service.dart';
 import 'dart:convert';
 import 'dart:core';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 
 final httpMethods = {
   "GET": new HttpClient().getUrl,
@@ -343,6 +343,7 @@ class DragonchainClient {
         this.getHttpHeaders(path, method, body: body, contentType: contentType);
     String url = '${this.endpoint}$path';
     var request = await httpMethods[method](Uri.parse(url));
+    if (request is BrowserHttpClientRequest) request.credentialsMode = BrowserHttpClientCredentialsMode.omit;
     headers.forEach((key, value) => request.headers.set(key, value));
     if (['PUT', 'POST', 'DELETE'].contains(method)) request.write(body);
     var response = await request.close();
